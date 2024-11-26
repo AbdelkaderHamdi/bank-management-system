@@ -11,7 +11,7 @@ import java.sql.Statement; // Permet d'exécuter des requêtes SQL.
  * Elle gère la connexion et la création des tables nécessaires au fonctionnement de l'application.
  */
 public class DatabaseConfig {
-    private static final String DB_URL = "jdbc:sqlite:BankJava.db";
+    private static final String DB_URL = "jdbc:sqlite:DataBase.db";
     private static Connection connection = null;
 
     /**
