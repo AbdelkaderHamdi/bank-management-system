@@ -43,6 +43,7 @@ public class DatabaseConfig {
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS utilisateurs (
                     username TEXT PRIMARY KEY,
+                    cinClient TEXT NOT NULL,
                     password TEXT NOT NULL
                 )
             """);

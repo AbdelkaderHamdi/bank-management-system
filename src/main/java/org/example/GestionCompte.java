@@ -56,7 +56,31 @@ public class GestionCompte {
             }
         }
 
-        /**
+    /**
+     * Récupère tous les comptes associés à un client spécifique en fonction de son CIN.
+     *
+     * @param cinClient Le CIN du client pour lequel récupérer les comptes.
+     * @return Une liste d'objets Comptes associés au client.
+     */
+    public List<Comptes> getComptesByClient(String cinClient) {
+        List<Comptes> comptes = new ArrayList<>();
+        String sql = "SELECT * FROM comptes WHERE cin_client = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, cinClient);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                comptes.add(createCompteFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la récupération des comptes: " + e.getMessage());
+        }
+        return comptes;
+    }
+
+
+    /**
          * Récupère un compte en fonction de son numéro.
          *
          * @param cin Le numéro unique du client.

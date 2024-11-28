@@ -68,7 +68,7 @@ public class GestionClient {
         return null;
     }
 
-    /* public List<Client> getAllClients() {
+     public List<Client> getAllClients() {
         List<Client> clients = new ArrayList<>();
         String sql = "SELECT * FROM clients";
 
@@ -89,7 +89,7 @@ public class GestionClient {
         return clients;
     }
 
-     */
+
 
     /**
      * Modifie les informations d'un client existant dans la base de données.
