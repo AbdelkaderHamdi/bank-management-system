@@ -53,12 +53,13 @@ public class Authentication {
      * @param password Le mot de passe à enregistrer.
      * @return true si l'utilisateur est créé avec succès, sinon false.
      */
-    public boolean creerUtilisateur(String username, String password) {
-        String sql = "INSERT INTO utilisateurs (username, password) VALUES (?, ?)";
+    public boolean creerUtilisateur(String username,String cin, String password) {
+        String sql = "INSERT INTO utilisateurs (username, cinClient, password) VALUES (?, ?, ?)";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setString(1, username); //Remplit le premier paramètre ? avec le nom d’utilisateur.
-            pstmt.setString(2, hashPassword(password)); //Remplit la deuxième
+            pstmt.setString(1, username);
+            pstmt.setString(2,cin);
+            pstmt.setString(3, hashPassword(password));
 
             //Exécute la requête et retourne true si une ligne a été ajoutée.
             return pstmt.executeUpdate() > 0;
@@ -68,6 +69,8 @@ public class Authentication {
             return false;
         }
     }
+
+
 
 
     /**

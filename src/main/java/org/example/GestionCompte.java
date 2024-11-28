@@ -30,23 +30,22 @@ public class GestionCompte {
          * @return true si le compte a été ajouté avec succès, sinon false.
          */
         public boolean ajouterCompte(Comptes compte) {
-            String sql = "INSERT INTO comptes (numero, cin_client, solde, date_ouverture, type, decouvert, taux_interet) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO comptes (cin_client, solde, date_ouverture, type, decouvert, taux_interet) " +
+                    "VALUES (?, ?, ?, ?, ?, ?)";
 
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-                pstmt.setString(1, compte.getNumeroCompte());
-                pstmt.setString(2, compte.getCinClient());
-                pstmt.setDouble(3, compte.getSolde());
-                pstmt.setDate(4, new java.sql.Date(compte.getDateOuverture().getTime()));
+                pstmt.setString(1, compte.getCinClient());
+                pstmt.setDouble(2, compte.getSolde());
+                pstmt.setDate(3, new java.sql.Date(compte.getDateOuverture().getTime()));
 
                 if (compte instanceof CompteCourant) {
-                    pstmt.setString(5, "COURANT");
-                    pstmt.setDouble(6, ((CompteCourant) compte).getDecouvert());
-                    pstmt.setNull(7, Types.DOUBLE);
-                } else {
-                    pstmt.setString(5, "EPARGNE");
+                    pstmt.setString(4, "COURANT");
+                    pstmt.setDouble(5, ((CompteCourant) compte).getDecouvert());
                     pstmt.setNull(6, Types.DOUBLE);
-                    pstmt.setDouble(7, ((CompteEpargne) compte).getTauxInteret());
+                } else {
+                    pstmt.setString(4, "EPARGNE");
+                    pstmt.setNull(5, Types.DOUBLE);
+                    pstmt.setDouble(6, ((CompteEpargne) compte).getTauxInteret());
                 }
 
                 return pstmt.executeUpdate() > 0;
@@ -56,7 +55,31 @@ public class GestionCompte {
             }
         }
 
-        /**
+    /**
+     * Récupère tous les comptes associés à un client spécifique en fonction de son CIN.
+     *
+     * @param cinClient Le CIN du client pour lequel récupérer les comptes.
+     * @return Une liste d'objets Comptes associés au client.
+     */
+    public List<Comptes> getComptesByClient(String cinClient) {
+        List<Comptes> comptes = new ArrayList<>();
+        String sql = "SELECT * FROM comptes WHERE cin_client = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, cinClient);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                comptes.add(createCompteFromResultSet(rs));
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la récupération des comptes: " + e.getMessage());
+        }
+        return comptes;
+    }
+
+
+    /**
          * Récupère un compte en fonction de son numéro.
          *
          * @param cin Le numéro unique du client.
@@ -106,7 +129,7 @@ public class GestionCompte {
          * @return true si la modification a été effectuée avec succès, sinon false.
          */
         public boolean modifierCompte(Comptes compte) {
-            String sql = "UPDATE comptes SET solde = ?, decouvert = ?, taux_interet = ? WHERE numero = ?";
+            String sql = "UPDATE comptes SET solde = ?, decouvert = ?, taux_interet = ? WHERE cin_client = ?";
 
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
                 pstmt.setDouble(1, compte.getSolde());
@@ -119,7 +142,7 @@ public class GestionCompte {
                     pstmt.setDouble(3, ((CompteEpargne) compte).getTauxInteret());
                 }
 
-                pstmt.setString(4, compte.getNumeroCompte());
+                pstmt.setString(4, compte.getCinClient());
 
                 return pstmt.executeUpdate() > 0;
             } catch (SQLException e) {
@@ -155,16 +178,15 @@ public class GestionCompte {
          */
         private Comptes createCompteFromResultSet(ResultSet rs) throws SQLException {
             String type = rs.getString("type");
-            String numero = rs.getString("numero");
             String cinClient = rs.getString("cin_client");
             double solde = rs.getDouble("solde");
 
             if (type.equals("COURANT")) {
                 double decouvert = rs.getDouble("decouvert");
-                return new CompteCourant(numero, cinClient, solde, decouvert);
+                return new CompteCourant(cinClient, solde, decouvert);
             } else {
                 double tauxInteret = rs.getDouble("taux_interet");
-                return new CompteEpargne(numero, cinClient, solde, tauxInteret);
+                return new CompteEpargne(cinClient, solde, tauxInteret);
             }
         }
 

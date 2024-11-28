@@ -10,13 +10,12 @@ public class CompteEpargne extends Comptes {
     /**
      * Constructeur pour initialiser un compte épargne.
      *
-     * @param numeroCompte  numéro unique du compte
      * @param cinClient     CIN du client associé au compte
      * @param solde         solde initial du compte
      * @param tauxInteret   taux d'intérêt du compte (en pourcentage)
      */
-    public CompteEpargne(String numeroCompte, String cinClient, double solde, double tauxInteret) {
-        super(numeroCompte, cinClient, solde);
+    public CompteEpargne(String cinClient, double solde, double tauxInteret) {
+        super(cinClient, solde);
         this.tauxInteret = tauxInteret;
     }
 

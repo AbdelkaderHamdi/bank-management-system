@@ -41,6 +41,27 @@ public class GestionClient {
     }
 
     /**
+     * Récupère le CIN d'un utilisateur à partir de son nom d'utilisateur.
+     *
+     * @param username Le nom d'utilisateur du client.
+     * @return Le CIN du client ou null si aucun utilisateur correspondant n'est trouvé.
+     */
+    public String getCinByUsername(String username) {
+        String sql = "SELECT cin FROM utilisateurs WHERE username = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("cin");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la récupération du CIN: " + e.getMessage());
+        }
+        return null;
+    }
+
+
+    /**
      * Récupère un client en fonction de son CIN.
      *
      * @param cin Le CIN du client.
@@ -68,7 +89,7 @@ public class GestionClient {
         return null;
     }
 
-    /* public List<Client> getAllClients() {
+     public List<Client> getAllClients() {
         List<Client> clients = new ArrayList<>();
         String sql = "SELECT * FROM clients";
 
@@ -89,7 +110,7 @@ public class GestionClient {
         return clients;
     }
 
-     */
+
 
     /**
      * Modifie les informations d'un client existant dans la base de données.

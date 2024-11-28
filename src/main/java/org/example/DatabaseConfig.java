@@ -43,6 +43,7 @@ public class DatabaseConfig {
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS utilisateurs (
                     username TEXT PRIMARY KEY,
+                    cinClient TEXT NOT NULL,
                     password TEXT NOT NULL
                 )
             """);
@@ -60,7 +61,7 @@ public class DatabaseConfig {
             // Table Comptes
             stmt.execute("""
                 CREATE TABLE IF NOT EXISTS comptes (
-                    numero TEXT PRIMARY KEY,
+                    numero INTEGER PRIMARY KEY AUTOINCREMENT,
                     cin_client TEXT NOT NULL,
                     solde REAL NOT NULL,
                     date_ouverture DATE NOT NULL,
@@ -90,3 +91,7 @@ public class DatabaseConfig {
         }
     }
 }
+
+
+
+// https://drawsql.app/teams/abdelkader-2/diagrams/java-bank-management-system

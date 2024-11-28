@@ -77,7 +77,7 @@ public class Client {
      */
 
     public String toString() {
-        return "Client[cin=" + cin + ", nom=" + nom + ", prenom=" + prenom + ", telephone=" + telNumber + "]";
+        return "\tcin= " + cin + "\n\tnom= " + nom + "\n\tprenom= " + prenom + "\n\ttelephone= " + telNumber + "\n";
     }
 
 }

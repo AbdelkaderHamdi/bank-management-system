@@ -8,7 +8,6 @@ import java.util.Date;
  */
 public abstract class Comptes {
 
-    protected String numeroCompte;
     protected String cinClient;
     protected Date dateOuverture;
     protected double solde;
@@ -16,28 +15,18 @@ public abstract class Comptes {
     /**
      * Constructeur pour initialiser un compte bancaire.
      *
-     * @param numeroCompte numéro unique du compte
      * @param cinClient    CIN du client associé au compte
      * @param solde        solde initial du compte
      */
-    public Comptes(String numeroCompte, String cinClient, double solde) {
-        this.numeroCompte = numeroCompte;
+    public Comptes(String cinClient, double solde) {
         this.cinClient = cinClient;
         this.dateOuverture = new Date();
         this.solde = solde;
     }
 
 
-    public void setNumeroCompte(String numeroCompte) {
-        this.numeroCompte = numeroCompte;
-    }
-
     public void setCinClient(String cinClient) {
         this.cinClient = cinClient;
-    }
-
-    public void setDateOuverture(Date dateOuverture) {
-        this.dateOuverture = dateOuverture;
     }
 
     public void setSolde(double solde) {
@@ -45,9 +34,6 @@ public abstract class Comptes {
     }
 
 
-    public String getNumeroCompte() {
-        return numeroCompte;
-    }
 
     public String getCinClient() {
         return cinClient;
@@ -61,6 +47,10 @@ public abstract class Comptes {
         return solde;
     }
 
+    @Override
+    public String toString() {
+        return "\tcinClient= " + cinClient + "\n\tdateOuverture= " + dateOuverture +"\n\tsolde= " + solde + "\n";
+    }
 
     /**
      * Effectue un retrait depuis le compte.

@@ -10,13 +10,12 @@ public class CompteCourant extends Comptes {
     /**
      * Constructeur pour initialiser un compte courant.
      *
-     * @param numeroCompte  numéro unique du compte
      * @param cinClient     CIN du client associé au compte
      * @param solde         solde initial du compte
      * @param decouvert     montant autorisé pour le découvert
      */
-    public CompteCourant(String numeroCompte, String cinClient, double solde, double decouvert) {
-        super(numeroCompte, cinClient, solde);
+    public CompteCourant(String cinClient, double solde, double decouvert) {
+        super(cinClient, solde);
         this.decouvert = decouvert;
     }
 
