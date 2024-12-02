@@ -1,6 +1,7 @@
 package org.example;
 
 import java.sql.SQLException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.List;
 
@@ -13,31 +14,8 @@ public class Main {
         System.out.print("Entrez votre choix : ");
     }
 
-    public static void printColoredMessage(String message, boolean isSuccess) {
-        // Codes ANSI pour les couleurs
-        final String RESET = "\033[0m";    // Reset
-        final String GREEN = "\033[0;32m"; // Vert pour succès
-        final String RED = "\033[0;31m";   // Rouge pour échec
-
-        // Sélectionner la couleur en fonction de la réussite ou de l'échec
-        String color = isSuccess ? GREEN : RED;
-
-        // Afficher le message coloré
-        System.out.println(color + message + RESET);
-    }
-
-    public static void displayAdminMenu() {
-        System.out.println("===== Admin workSpace ===== ");
-        System.out.println("1. Gestion des Clients");
-        System.out.println("2. Gestion des Comptes");
-        System.out.println("3. Opérations Bancaires");
-        System.out.println("0. Déconnexion");
-        System.out.print("Choisissez une option : ");
-    }
-
-
     public static void displayClientsMenu() {
-        System.out.println("===== Gestion Client =====");
+        System.out.println("===== GESTION DES CLIENTS =====");
         System.out.println("1. Ajouter un client");
         System.out.println("2. Consulter un client");
         System.out.println("3. Modifier un client");
@@ -65,6 +43,28 @@ public class Main {
         System.out.print("Choisissez une option : ");
     }
 
+
+    public static void printColoredMessage(String message, boolean isSuccess) {
+        // Codes ANSI pour les couleurs
+        final String RESET = "\033[0m";    // Reset
+        final String GREEN = "\033[0;32m"; // Vert pour succès
+        final String RED = "\033[0;31m";   // Rouge pour échec
+
+        // Sélectionner la couleur en fonction de la réussite ou de l'échec
+        String color = isSuccess ? GREEN : RED;
+
+        // Afficher le message coloré
+        System.out.println(color + message + RESET);
+    }
+
+    public static void displayAdminMenu() {
+        System.out.println("===== GESTION BANCAIRE =====");
+        System.out.println("1. Gestion des Clients");
+        System.out.println("2. Gestion des Comptes");
+        System.out.println("3. Opérations Bancaires");
+        System.out.println("0. Déconnexion");
+        System.out.print("Choisissez une option : ");
+    }
 
     public static void adminServices(Scanner scanner, GestionClient gestionClient, GestionCompte gestionCompte, GestionOperation gestionOperation) throws SQLException {
         int choix;
@@ -165,12 +165,14 @@ public class Main {
 
                         switch(sousChoixComptes) {
                             case 1: // Créer compte courant
+                                System.out.print("Numero compte : ");
+                                String numeroCourant = scanner.nextLine();
                                 System.out.print("CIN du client : ");
                                 String cinCourant = scanner.nextLine();
                                 System.out.print("Solde initial : ");
                                 double soldeCourant = scanner.nextDouble();
 
-                                Comptes nouveauCompteCourant = new CompteCourant(cinCourant, soldeCourant, 10);
+                                Comptes nouveauCompteCourant = new CompteCourant(numeroCourant, cinCourant, soldeCourant, 10);
                                 if (gestionCompte.ajouterCompte(nouveauCompteCourant)) {
                                     printColoredMessage("Compte courant créé avec succès!", true);
                                 } else {
@@ -179,12 +181,14 @@ public class Main {
                                 break;
 
                             case 2: // Créer compte épargne
+                                System.out.print("Numero compte : ");
+                                String numeroEpargne = scanner.nextLine();
                                 System.out.print("CIN du client : ");
                                 String cinEpargne = scanner.nextLine();
                                 System.out.print("Solde initial : ");
                                 double soldeEpargne = scanner.nextDouble();
 
-                                Comptes nouveauCompteEpargne = new CompteEpargne(cinEpargne, soldeEpargne, 10);
+                                Comptes nouveauCompteEpargne = new CompteEpargne(numeroEpargne, cinEpargne, soldeEpargne, 10);
                                 if (gestionCompte.ajouterCompte(nouveauCompteEpargne)) {
                                     printColoredMessage("Compte épargne créé avec succès!", true);
                                 } else {
@@ -193,9 +197,9 @@ public class Main {
                                 break;
 
                             case 3: // Consulter compte
-                                System.out.print("Cin du client : ");
-                                String cin = scanner.nextLine();
-                                Comptes compte = gestionCompte.getCompte(cin);
+                                System.out.print("Numéro de compte : ");
+                                String numero = scanner.nextLine();
+                                Comptes compte = gestionCompte.getCompte(numero);
                                 if (compte != null) {
                                     System.out.println("Informations du compte :");
                                     System.out.println(compte.toString());
@@ -300,7 +304,7 @@ public class Main {
     public static void clientServices(Scanner scanner, GestionClient gestionClient, GestionCompte gestionCompte, GestionOperation gestionOperation, String currentClientCIN) throws SQLException {
         int choix;
         do {
-            System.out.println("===== Client workSpace =====");
+            System.out.println("Menu Client");
             System.out.println("1. Consulter mes informations");
             System.out.println("2. Consulter mes comptes");
             System.out.println("3. Effectuer des opérations (Retrait, Versement, Virement.)");
@@ -423,6 +427,7 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
         boolean isAdmin = false;
+        String currentClientCIN = null;
 
         int choix;
         do {
@@ -432,60 +437,62 @@ public class Main {
 
             switch (choix) {
                 case 1: // Admin or Client login
-                    System.out.print("Nom d'utilisateur : ");
+                    System.out.print("Nom d'utilisateur Admin : ");
                     String Username = scanner.nextLine();
-                    System.out.print("Mot de passe : ");
+                    System.out.print("Mot de passe Admin : ");
                     String Password = scanner.nextLine();
-
-                    isAdmin = Username.equals("admin") && Password.equals("admin123");
-                    if (isAdmin) {
-                        adminServices(scanner, gestionClient, gestionCompte, gestionOperation);
+                    if (auth.authentifier(Username, Password)) {
+                        isAdmin = Username.equals("admin") && Password.equals("admin123");
+                        printColoredMessage("Connexion réussie!", true);
                     } else {
-                        if (auth.authentifier(Username, Password)) {
-                            printColoredMessage("Connexion réussie!", true);
-                            String Cin = gestionClient.getCinByUsername(Username);
-                            clientServices(scanner, gestionClient, gestionCompte, gestionOperation, Cin);
-                        } else printColoredMessage("Nom d'utilisateur ou mot de passe incorrect.", false);
+                        printColoredMessage("Nom d'utilisateur ou mot de passe incorrect.", false);
                     }
                     break;
 
+
+
                 case 2: // Client sign-up
-                            System.out.print("CIN : ");
-                            String newCin = scanner.nextLine();
-                            System.out.print("Nom : ");
-                            String nom = scanner.nextLine();
-                            System.out.print("Prénom : ");
-                            String prenom = scanner.nextLine();
-                            System.out.print("Téléphone : ");
-                            String telephone = scanner.nextLine();
-                            System.out.print("Mot de passe : ");
-                            String newPassword = scanner.nextLine();
+                    System.out.print("CIN : ");
+                    String newCin = scanner.nextLine();
+                    System.out.print("Nom : ");
+                    String nom = scanner.nextLine();
+                    System.out.print("Prénom : ");
+                    String prenom = scanner.nextLine();
+                    System.out.print("Téléphone : ");
+                    String telephone = scanner.nextLine();
+                    System.out.print("Mot de passe : ");
+                    String newPassword = scanner.nextLine();
 
-                            Client nouveauClient = new Client(newCin, nom, prenom, telephone);
-                            auth.creerUtilisateur(nom, newCin, newPassword);
+                    Client nouveauClient = new Client(newCin, nom, prenom, telephone);
+                    auth.creerUtilisateur(nom,newCin, newPassword);
 
 
-                            if (gestionClient.ajouterClient(nouveauClient)) {
-                                printColoredMessage("Inscription réussie!", true);
-                                clientServices(scanner, gestionClient, gestionCompte, gestionOperation, newCin);
-                            } else {
-                                printColoredMessage("Erreur lors de l'inscription. Réessayez.", false);
-                            }
-                            break;
+                    if (gestionClient.ajouterClient(nouveauClient)) {
+                        printColoredMessage("Inscription réussie! Vous pouvez maintenant vous connecter.", true);
+                        displayLoginMenu();
+                    } else {
+                        printColoredMessage("Erreur lors de l'inscription. Réessayez.", false);
+                    }
+                    break;
 
                 case 0:
-                            System.out.println("Au revoir! 👋");
-                            break;
+                    System.out.println("Au revoir! 👋");
+                    break;
 
                 default:
-                            printColoredMessage("Option invalide!", false);
-                    }
+                    printColoredMessage("Option invalide!", false);
             }
-            while (choix != 0) ;
+        } while (choix != 0);
 
-            scanner.close();
+        // Afficher les services selon le rôle
+        if (isAdmin) {
+            adminServices(scanner, gestionClient, gestionCompte, gestionOperation);
+        } else {
+            clientServices(scanner, gestionClient, gestionCompte, gestionOperation, currentClientCIN);
         }
 
+        scanner.close();
     }
 
 
+}
