@@ -13,6 +13,25 @@ public class Main {
         System.out.print("Entrez votre choix : ");
     }
 
+    // Method to clear the console screen
+    public static void clearScreen() {
+        try {
+            final String os = System.getProperty("os.name");
+
+            if (os.contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            }
+            else {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+        }
+        catch (final Exception e) {
+            // Handle any exceptions
+            System.out.println("Error clearing screen: " + e.getMessage());
+        }
+    }
+
     public static void printColoredMessage(String message, boolean isSuccess) {
         // Codes ANSI pour les couleurs
         final String RESET = "\033[0m";    // Reset

@@ -95,3 +95,4 @@ public class DatabaseConfig {
 
 
 // https://drawsql.app/teams/abdelkader-2/diagrams/java-bank-management-system
+// https://gamma.app/docs/Presentation-dun-Systeme-de-Gestion-Bancaire-vjew4lk57kazja7
